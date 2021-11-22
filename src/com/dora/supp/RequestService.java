@@ -9,7 +9,7 @@ import javax.jws.soap.SOAPBinding.Style;
 @SOAPBinding(style = Style.RPC)
 public class RequestService {
     @WebMethod
-    public String insertRequest(String dora,int qty,String ip,String ts,String epo){
+    public String insertRequest(int dora,int qty,String ip,String ts,String epo){
         new RequestHandler().insertRequest(dora, qty, ip, ts, epo);
         String response = "Omedetou";
         return response;

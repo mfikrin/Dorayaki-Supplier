@@ -82,9 +82,9 @@ public class RequestHandler {
         return req;
     }
 
-    public void insertRequest(String dora,int qty,String ip,String ts,String epo){ // Insert req to log w/ rate limiter
+    public void insertRequest(int dora,int qty,String ip,String ts,String epo){ // Insert req to log w/ rate limiter
         try{
-            int dora_id = new DorayakiHandler().getDoraid(dora);
+            int dora_id = dora;
             String q = String.format("SELECT COUNT(*) AS rowcount FROM request_log WHERE ip='%s' AND epoint='%s' AND timestamp_req > NOW() - interval '23 hours'",ip,epo);
             Statement stmt = c.createStatement();
             ResultSet rSet = stmt.executeQuery(q);
@@ -118,6 +118,6 @@ public class RequestHandler {
 
     public static void main(String[] args) {
         RequestHandler rh = new RequestHandler();
-        rh.insertRequest("Jeruk",2,"123.123.123","2021-11-22 06:45:10","request");
+        rh.insertRequest(0,2,"123.123.123","2021-11-22 06:45:10","request");
     }
 }
