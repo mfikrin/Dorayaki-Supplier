@@ -1,6 +1,7 @@
 package com.dora.supp;
 
 import java.sql.*;
+import java.util.*;
 
 public class DorayakiHandler {
     static final String DB_USER = "postgres";
@@ -18,7 +19,5 @@ public class DorayakiHandler {
             e.printStackTrace();
         }
     }
-    public static void main(String[] args) {
-        DorayakiHandler dd = new DorayakiHandler();
-    }
+
 }
