@@ -82,17 +82,23 @@ public class RequestHandler {
         return req;
     }
 
-    public void insertRequest(int reqid,String ip,String ts,String epo){ // Insert req to log w/ rate limiter
+    public void insertRequest(String dora,int qty,String ip,String ts,String epo){ // Insert req to log w/ rate limiter
         try{
+            int dora_id = new DorayakiHandler().getDoraid(dora);
             String q = String.format("SELECT COUNT(*) AS rowcount FROM request_log WHERE ip='%s' AND epoint='%s' AND timestamp_req > NOW() - interval '23 hours'",ip,epo);
             Statement stmt = c.createStatement();
             ResultSet rSet = stmt.executeQuery(q);
             rSet.next();
             int count = rSet.getInt("rowcount");
             if(count > 0 && count <= threshold){
-                String insq = String.format("INSERT INTO request_log(request_id,ip,timestamp_req,epoint) VALUES (%d,'%s','%s','%s')",reqid,ip,ts,epo);
-                stmt.executeUpdate(insq);
-                System.out.println("Insert Success");
+                String insq1 = String.format("INSERT INTO request(dora_id,req_qty,status) VALUES (%d,%d,'%s') RETURNING request_id",dora_id,qty,"pending");
+                ResultSet res = stmt.executeQuery(insq1);
+                System.out.println("Insert to request Success");
+                res.next();
+                int reqid = res.getInt("request_id"); 
+                String insq2 = String.format("INSERT INTO request_log(request_id,ip,timestamp_req,epoint) VALUES (%d,'%s','%s','%s')",reqid,ip,ts,epo);
+                stmt.executeUpdate(insq2);
+                System.out.println("Insert to request_log Success");
             }
         }
         catch(Exception e){
@@ -110,8 +116,8 @@ public class RequestHandler {
         }
     }
 
-    // public static void main(String[] args) {
-    //     RequestHandler rh = new RequestHandler();
-    //     rh.insertRequest(2, "123.123.123", "2021-11-22 07:45:10", "request");
-    // }
+    public static void main(String[] args) {
+        RequestHandler rh = new RequestHandler();
+        rh.insertRequest("Jeruk",2,"123.123.123","2021-11-22 06:45:10","request");
+    }
 }

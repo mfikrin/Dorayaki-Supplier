@@ -9,6 +9,7 @@ public class Dorayaki {
     public Dorayaki(int _id, String _name){
         this.id = _id;
         this.name = _name;
+        this.qty = 0;
     }
     public Dorayaki(int _id, String _name, int _qty){
         this.id = _id;
