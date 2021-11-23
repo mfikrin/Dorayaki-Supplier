@@ -82,15 +82,15 @@ public class RequestHandler {
         return req;
     }
 
-    public void insertRequest(int dora,int qty,String ip,String ts,String epo){ // Insert req to log w/ rate limiter
+    public boolean insertRequest(String dora,int qty,String ip,String ts,String epo){ // Insert req to log w/ rate limiter
         try{
-            int dora_id = dora;
+            int dora_id = new DorayakiHandler().getDoraid(dora);
             String q = String.format("SELECT COUNT(*) AS rowcount FROM request_log WHERE ip='%s' AND epoint='%s' AND timestamp_req > NOW() - interval '23 hours'",ip,epo);
             Statement stmt = c.createStatement();
             ResultSet rSet = stmt.executeQuery(q);
             rSet.next();
             int count = rSet.getInt("rowcount");
-            if(count > 0 && count <= threshold){
+            if(count <= threshold){
                 String insq1 = String.format("INSERT INTO request(dora_id,req_qty,status) VALUES (%d,%d,'%s') RETURNING request_id",dora_id,qty,"pending");
                 ResultSet res = stmt.executeQuery(insq1);
                 System.out.println("Insert to request Success");
@@ -114,10 +114,40 @@ public class RequestHandler {
                 }
             }
         }
+        return true;
+    }
+    public ArrayList<ArrayList<String>> getStatus(String ip){ //get status of all requests
+        ArrayList<ArrayList<String>> reqList = new ArrayList<ArrayList<String>>();
+        try{
+            String q = String.format("SELECT timestamp_req,status from request,request_log WHERE request.request_id = request_log.request_id AND request_log.ip ='%s'",ip);
+            Statement stmt = c.createStatement();
+            ResultSet rSet = stmt.executeQuery(q);
+            while(rSet.next()){
+                ArrayList<String> temp = new ArrayList<String>();
+                temp.add(rSet.getString("timestamp_req"));
+                temp.add(rSet.getString("status"));
+                reqList.add(temp);
+            }
+            System.out.println("Yes");
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        finally{
+            if(c!=null){
+                try{
+                    c.close();
+                }
+                catch(Exception e){
+                    System.out.println("Failed to close");
+                }
+            }
+        }
+        return reqList;
     }
 
-    public static void main(String[] args) {
-        RequestHandler rh = new RequestHandler();
-        rh.insertRequest(0,2,"123.123.123","2021-11-22 06:45:10","request");
-    }
+    // public static void main(String[] args) {
+    //     RequestHandler rh = new RequestHandler();
+    //     rh.insertRequest(0,2,"123.123.123","2021-11-22 06:45:10","request");
+    // }
 }
