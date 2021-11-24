@@ -83,14 +83,16 @@ public class RequestHandler {
     }
 
     public boolean insertRequest(String dora,int qty,String ip,String ts,String epo){ // Insert req to log w/ rate limiter
+        boolean retval = false;
         try{
             int dora_id = new DorayakiHandler().getDoraid(dora);
-            String q = String.format("SELECT COUNT(*) AS rowcount FROM request_log WHERE ip='%s' AND epoint='%s' AND timestamp_req > NOW() - interval '23 hours'",ip,epo);
+            String q = String.format("SELECT COUNT(*) AS rowcount FROM request_log WHERE ip='%s' AND epoint='%s' AND timestamp_req > NOW() - interval '5 minutes'",ip,epo);
+            // Rate Limit : max 10 request from a specific ip to endpoint in last 5 mins
             Statement stmt = c.createStatement();
             ResultSet rSet = stmt.executeQuery(q);
             rSet.next();
             int count = rSet.getInt("rowcount");
-            if(count <= threshold){
+            if(count < threshold){
                 String insq1 = String.format("INSERT INTO request(dora_id,req_qty,status) VALUES (%d,%d,'%s') RETURNING request_id",dora_id,qty,"pending");
                 ResultSet res = stmt.executeQuery(insq1);
                 System.out.println("Insert to request Success");
@@ -99,6 +101,7 @@ public class RequestHandler {
                 String insq2 = String.format("INSERT INTO request_log(request_id,ip,timestamp_req,epoint) VALUES (%d,'%s','%s','%s')",reqid,ip,ts,epo);
                 stmt.executeUpdate(insq2);
                 System.out.println("Insert to request_log Success");
+                retval = true;
             }
         }
         catch(Exception e){
@@ -114,7 +117,7 @@ public class RequestHandler {
                 }
             }
         }
-        return true;
+        return retval;
     }
     public ArrayList<ArrayList<String>> getStatus(String ip){ //get status of all requests
         ArrayList<ArrayList<String>> reqList = new ArrayList<ArrayList<String>>();
