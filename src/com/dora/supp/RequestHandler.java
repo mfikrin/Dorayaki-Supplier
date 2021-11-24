@@ -2,6 +2,13 @@ package com.dora.supp;
 
 import java.sql.*;
 import java.util.*;
+import java.io.OutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class RequestHandler {
     static final String DB_USER = "postgres";
@@ -102,6 +109,8 @@ public class RequestHandler {
                 stmt.executeUpdate(insq2);
                 System.out.println("Insert to request_log Success");
                 retval = true;
+                boolean send = this.sendRequest(dora, qty, ip, ts, epo);
+                System.out.println(send);  
             }
         }
         catch(Exception e){
@@ -149,8 +158,55 @@ public class RequestHandler {
         return reqList;
     }
 
+    public boolean sendRequest(String dora,int qty,String ip,String ts,String epo){ //send detail request ke REST API node/backend pabrik 
+        boolean retval = false;
+        String build;
+        try{
+            URL url = new URL("http://localhost:5000/reqdor");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            String time = ts.replace(":", ".");
+            if(qty > 0){
+                build = "[From "+ip+" at "+time+"] Add "+String.valueOf(qty)+" "+dora+" to shop";
+            }
+            else{
+                build = "[From "+ip+" at "+time+"] Remove "+String.valueOf((-1 * qty))+" "+dora+" from shop";
+            }
+            // System.out.println(build);
+            // String sent = "{\"msg\":KUDA}";
+            String sent = "{\"msg\":\""+build+"\"}";
+            System.out.println(sent);
+            OutputStream os = conn.getOutputStream();
+            os.write(sent.getBytes());
+            os.flush();
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+				(conn.getInputStream())));
+
+		    String output;
+		    System.out.println("Output from Server .... \n");
+		    while ((output = br.readLine()) != null) {
+			    System.out.println(output);
+		    }
+
+		conn.disconnect();
+            retval = true;
+        }
+        catch (MalformedURLException e) {
+
+            e.printStackTrace();
+    
+          } catch (IOException e) {
+    
+            e.printStackTrace();
+    
+         }
+         return retval;
+    }
+
     // public static void main(String[] args) {
     //     RequestHandler rh = new RequestHandler();
-    //     rh.insertRequest(0,2,"123.123.123","2021-11-22 06:45:10","request");
+    //     rh.sendRequest("blah",-2,"123.123.123","2021-11-22 06:45:10","reqdor");
     // }
 }
