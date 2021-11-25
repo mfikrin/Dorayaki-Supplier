@@ -1,0 +1,36 @@
+<definitions targetNamespace="http://supp.dora.com/" name="DorayakiServiceService">
+    <types>
+        <xsd:schema>
+            <xsd:import namespace="http://jaxb.dev.java.net/array" schemaLocation="http://localhost:8080/DoraSupp/ws/dora?xsd=1" />
+        </xsd:schema>
+    </types>
+    <message name="getDorayaki">
+        <part name="arg0" type="xsd:string" />
+    </message>
+    <message name="getDorayakiResponse">
+        <part name="return" type="ns1:stringArray" />
+    </message>
+    <portType name="DorayakiService">
+        <operation name="getDorayaki">
+            <input wsam:Action="http://supp.dora.com/DorayakiService/getDorayakiRequest" message="tns:getDorayaki" />
+            <output wsam:Action="http://supp.dora.com/DorayakiService/getDorayakiResponse" message="tns:getDorayakiResponse" />
+        </operation>
+    </portType>
+    <binding name="DorayakiServicePortBinding" type="tns:DorayakiService">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc" />
+        <operation name="getDorayaki">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" namespace="http://supp.dora.com/" />
+            </input>
+            <output>
+                <soap:body use="literal" namespace="http://supp.dora.com/" />
+            </output>
+        </operation>
+    </binding>
+    <service name="DorayakiServiceService">
+        <port name="DorayakiServicePort" binding="tns:DorayakiServicePortBinding">
+            <soap:address location="http://localhost:8080/DoraSupp/ws/dora" />
+        </port>
+    </service>
+</definitions>

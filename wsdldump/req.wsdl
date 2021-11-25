@@ -1,0 +1,59 @@
+<definitions targetNamespace="http://supp.dora.com/" name="RequestServiceService">
+    <types>
+        <xsd:schema>
+            <xsd:import namespace="http://jaxb.dev.java.net/array" schemaLocation="http://localhost:8080/DoraSupp/ws/req?xsd=1" />
+        </xsd:schema>
+    </types>
+    <message name="getStatus">
+        <part name="arg0" type="xsd:string" />
+    </message>
+    <message name="getStatusResponse">
+        <part name="return" type="ns1:stringArrayArray" />
+    </message>
+    <message name="insertRequest">
+        <part name="arg0" type="xsd:string" />
+        <part name="arg1" type="xsd:int" />
+        <part name="arg2" type="xsd:string" />
+        <part name="arg3" type="xsd:string" />
+        <part name="arg4" type="xsd:string" />
+    </message>
+    <message name="insertRequestResponse">
+        <part name="return" type="xsd:boolean" />
+    </message>
+    <portType name="RequestService">
+        <operation name="getStatus">
+            <input wsam:Action="http://supp.dora.com/RequestService/getStatusRequest" message="tns:getStatus" />
+            <output wsam:Action="http://supp.dora.com/RequestService/getStatusResponse" message="tns:getStatusResponse" />
+        </operation>
+        <operation name="insertRequest" parameterOrder="arg0 arg1 arg2 arg3 arg4">
+            <input wsam:Action="http://supp.dora.com/RequestService/insertRequestRequest" message="tns:insertRequest" />
+            <output wsam:Action="http://supp.dora.com/RequestService/insertRequestResponse" message="tns:insertRequestResponse" />
+        </operation>
+    </portType>
+    <binding name="RequestServicePortBinding" type="tns:RequestService">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc" />
+        <operation name="getStatus">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" namespace="http://supp.dora.com/" />
+            </input>
+            <output>
+                <soap:body use="literal" namespace="http://supp.dora.com/" />
+            </output>
+        </operation>
+        <operation name="insertRequest">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" namespace="http://supp.dora.com/" />
+            </input>
+            <output>
+                <soap:body use="literal" namespace="http://supp.dora.com/" />
+            </output>
+        </operation>
+    </binding>
+    <service name="RequestServiceService">
+        <port name="RequestServicePort" binding="tns:RequestServicePortBinding">
+            <soap:address location="http://localhost:8080/DoraSupp/ws/req" />
+        </port>
+    </service>
+</definitions>
