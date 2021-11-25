@@ -46,7 +46,7 @@ public class DorayakiHandler {
         }
         return dorList;
     }
-    public ArrayList<String> getDorayakiName(){ // Get All Dorayaki name - buat add variant 
+    public ArrayList<String> getDorayakiName(String ip){ // Get All Dorayaki name - buat add variant 
         ArrayList<String> dorList = new ArrayList<String>();
         try{
             String q = "SELECT dora_name FROM dora";
@@ -98,6 +98,34 @@ public class DorayakiHandler {
             }
         }
         return doraid;
+    }
+
+    public boolean exceedLimit(String ip){
+        boolean retval = true;
+        try{
+            String q = String.format("SELECT COUNT(*) AS rowcount FROM request_log WHERE ip='%s' AND timestamp_req > NOW() - interval '5 minutes'",ip);
+            Statement stmt = c.createStatement();
+            ResultSet rSet = stmt.executeQuery(q);
+            rSet.next();
+            int count = rSet.getInt("rowcount");
+            if(count < 10){
+                retval = false;
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        finally{
+            if(c!=null){
+                try{
+                    c.close();
+                }
+                catch(Exception e){
+                    System.out.println("Failed to close");
+                }
+            }
+        }
+        return retval;
     }
     // public static void main(String[] args) {
     //     DorayakiHandler dd = new DorayakiHandler();

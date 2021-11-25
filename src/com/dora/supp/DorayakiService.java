@@ -11,8 +11,8 @@ import javax.jws.soap.SOAPBinding.Style;
 @SOAPBinding(style = Style.RPC)
 public class DorayakiService {
 	@WebMethod
-	public String[] getDorayaki(){
-		ArrayList<String> al = new DorayakiHandler().getDorayakiName();
+	public String[] getDorayaki(String ip){
+		ArrayList<String> al = new DorayakiHandler().getDorayakiName(ip);
         String[] dl = new String[al.size()];
         dl = al.toArray(dl);
         return dl;	
