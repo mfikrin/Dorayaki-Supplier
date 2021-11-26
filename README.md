@@ -32,6 +32,8 @@ request_log(log_id,request_id,ip,timestamp_req,epoint)
 4. Forward request ke endpoint /reqdor milik REST API backend : 13519018
 5. Menerima  permintaan status request dari toko dan memberikan response : 13519018
 6. Menerima permintaan daftar nama varian dorayaki dari toko dan memberikan response : 13519018
+7. File Utilitas Class Dorayaki : 13519069
+8. File Utilitas Class Request : 13519091
 
 ## Dependency
 - Disarankan menggunakan [Eclipse IDE](https://www.eclipse.org/downloads/) for Enterprise Java and Web Development. Pastikan software yang berkaitan dengan Web Development sudah terinstal.
